@@ -1,0 +1,34 @@
+// Light reader with the consequently reaction of the motor which moves the skin.
+
+const int highlight = 900;           // It's only an example value, It will change for each plant.
+
+int sensorPin = A0;                      // It's the LDR
+int MotorI1 = 7;                            // Motor direction to close.
+int MotorI2 = 8;                            // Motor direction to open.
+int button = 13;                            // Botton at the final of the rail when it closes.
+
+void setup(){
+	pinMode(sensorPin, INPUT);
+	pinMode(MotorI1, OUTPUT);
+	pinMode(MotorI2, OUTPUT);
+	pinMode(button, INPUT);
+}
+
+void loop(){
+	sensorPin = analogRead(sensorPin); 	//Then we see how much light there
+
+	if (sensorPin >= highlight){
+		digitalWrite(MotorI1, HIGH);
+
+		if (button == HIGH){
+			digitalWrite(MotorI1, LOW);
+		}
+	}
+	if (sensorPin <= highlight){
+		if (button == HIGH){
+			digitalWrite(MotorI2, HIGH);
+			delay(5000);
+		}
+	}
+}
+	
