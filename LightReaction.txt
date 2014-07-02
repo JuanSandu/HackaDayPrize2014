@@ -1,4 +1,4 @@
-// Light reader with the consequently reaction of the motor which moves the skin.
+// For Arduino. Light reader with the consequently reaction of the motor which moves the skin.
 
 const int highlight = 900;           // It's only an example value, It will change for each plant.
 
