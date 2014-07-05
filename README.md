@@ -1,4 +1,4 @@
-HackaDayPrize-Protective Capsule
+HackaDayPrize-Smart Small Greenhouse
 =============
 
 Here I will put the programmes as I go making. I don't know a lot of programming so I hope you will tell me everything I can improve.
