@@ -1,11 +1,12 @@
 // For Arduino. Light reader with the consequently reaction of the motor which moves the skin.
 
-const int highlight = 900;           // It's only an example value, It will change for each plant.
+const int highlight = 30;           // It's only an example value, It will change for each plant.
 
-int sensorPin = A0;                      // It's the LDR
+int sensorPin = 0;                      // It's the LDR
 int MotorI1 = 7;                            // Motor direction to close.
 int MotorI2 = 8;                            // Motor direction to open.
-int button = 13;                            // Botton at the final of the rail when it closes.
+int button = 13;			// Botton at the final of the rail when it closes.
+int value = 0;
 
 void setup(){
 	pinMode(sensorPin, INPUT);
@@ -15,16 +16,16 @@ void setup(){
 }
 
 void loop(){
-	sensorPin = analogRead(sensorPin); 	//Then we see how much light there
+	value = analogRead(sensorPin); 	//Then we see how much light there
 
-	if (sensorPin >= highlight){
+	if (value >= highlight){
 		digitalWrite(MotorI1, HIGH);
 
 		if (button == HIGH){
 			digitalWrite(MotorI1, LOW);
 		}
 	}
-	if (sensorPin <= highlight){
+	else if (value < highlight){
 		if (button == HIGH){
 			digitalWrite(MotorI2, HIGH);
 			delay(5000);
