@@ -1,16 +1,20 @@
 #include <Wire.h>
+#include <RTClib.h>
+RTC_DS1307 RTC;
 #include <DHT.h>
 #define DHTPIN 2
 #define DHTTYPE DHT11
 DHT dht(DHTPIN, DHTTYPE);
 
 const int highlight = 300;
+const int minilight = 30; //Igual que la luz cuando esta nublado
 
 int sensorLDRPin = 0;
 int finalButton = 13;
 int MotorA = 7; // Conectado a su transistor conmutador, Avance
 int MotorB = 8;
 int MotorC = 9; //Conectado al transistor para el ventilador
+int MotorD = 10;
 int ledPin = 14;
 
 
@@ -19,11 +23,14 @@ void setup(){
   cambiarle los valores de las variables segun la planta */
   Serial.begin(9600);
   
+  RTC.begin();//Se inicia el reloj
   dht.begin();//Asi se inicia el sensor de humedad y temperatura
   
   pinMode(ledPin, OUTPUT);
   pinMode(MotorA, OUTPUT);
   pinMode(MotorB, OUTPUT);
+  pinMode(MotorC, OUTPUT);
+  pinMode(MotorD, OUTPUT);
   //Ahora deberia ir la comunicacion entre el dispositivo y el Arduino
 }
 
@@ -31,6 +38,8 @@ void loop(){
   
   float h = dht.readHumidity();//Establece la lectura de humedad
   float t = dht.readTemperature();//Establece la lectura de Temperatura
+  
+  DateTime now = RTC.now();//Se inicia el relojTime now = RTC.now();
   
   int lightValue;
   lightValue = analogRead(sensorLDRPin);//Lectura de luz ambiental
@@ -54,7 +63,11 @@ void loop(){
   
   /* Ahora debe ir el regadio automatico, hay que investigar la 
   entrada de datos del reloj */
-  
+  if ((now.hour() == 20) && (now.minute() == 30) && (h < 60)){
+    digitalWrite(MotorD, HIGH);
+    delay(20000);
+    digitalWrite(MotorD, LOW);
+  }
   //Final del segundo programa
   
   /* Aqui empieza el tercer programa, que trata la reduccion de la
@@ -70,5 +83,11 @@ void loop(){
     digitalWrite(ledPin, HIGH);
   }
   
+  if((lightValue < minilight) && (06 < now.hour() < 20)){
+    digitalWrite(ledPin, HIGH);
+  }
   
+  if((minilight < lightValue < highlight) || (00 <= now.hour() <= 06 ) || (21 <= now.hour() <= 23)){
+    digitalWrite(ledPin, LOW);
+  }    
 }
