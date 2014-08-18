@@ -5,9 +5,13 @@ RTC_DS1307 RTC;
 #define DHTPIN 2
 #define DHTTYPE DHT11
 DHT dht(DHTPIN, DHTTYPE);
+int option;
 
-const int highlight = 300;
-const int minilight = 30; //Igual que la luz cuando esta nublado
+int highlight;
+int minilight;//Igual que la luz cuando esta nublado
+int tempmax; //Temperatura maxima dentro
+int hwater; //Hora de Regar
+int mwater;
 
 int sensorLDRPin = 0;
 int finalButton = 13;
@@ -19,8 +23,7 @@ int ledPin = 14;
 
 
 void setup(){
-  /* Aqui se debe establecer la comunicacion con el movil para 
-  cambiarle los valores de las variables segun la planta */
+  
   Serial.begin(9600);
   
   RTC.begin();//Se inicia el reloj
@@ -31,10 +34,28 @@ void setup(){
   pinMode(MotorB, OUTPUT);
   pinMode(MotorC, OUTPUT);
   pinMode(MotorD, OUTPUT);
-  //Ahora deberia ir la comunicacion entre el dispositivo y el Arduino
 }
 
 void loop(){
+  /* Aqui se debe establecer la comunicacion con el movil para 
+  cambiarle los valores de las variables segun la planta */
+  if (Serial.available()>0){
+    option=Serial.read();
+    if(option=='a'){
+      highlight = 300;
+      minilight = 100;
+      tempmax = 30;
+      hwater = 20;
+      mwater = 30;
+    }
+    if(option=='b'){
+      highlight = 200;
+      minilight = 100;
+      tempmax = 28;
+      hwater = 16;
+      mwater = 30;
+    }
+  }
   
   float h = dht.readHumidity();//Establece la lectura de humedad
   float t = dht.readTemperature();//Establece la lectura de Temperatura
@@ -63,7 +84,7 @@ void loop(){
   
   /* Ahora debe ir el regadio automatico, hay que investigar la 
   entrada de datos del reloj */
-  if ((now.hour() == 20) && (now.minute() == 30) && (h < 60)){
+  if ((now.hour() == hwater) && (now.minute() == mwater) && (h < 60)){
     digitalWrite(MotorD, HIGH);
     delay(20000);
     digitalWrite(MotorD, LOW);
@@ -72,8 +93,10 @@ void loop(){
   
   /* Aqui empieza el tercer programa, que trata la reduccion de la
   temperatura activando un ventilador simplemente */
-  if(t > 28){
+  if(t > tempmax){
     digitalWrite(MotorC, HIGH);
+    delay(30000);
+    digitalWrite(MotorC, LOW);
   }
   //Final del tercer subprograma
   
